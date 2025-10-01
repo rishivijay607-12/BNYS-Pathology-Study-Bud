@@ -1,25 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PATHOLOGY_TOPICS } from '../constants.ts';
 import { StudyMode } from '../types.ts';
 import { BookOpenIcon, SparklesIcon, QuestionMarkIcon } from './icons/index.tsx';
 
 interface SidebarProps {
-  onGenerate: (topic: string, mode: StudyMode, apiKey: string) => void;
+  onGenerate: (topic: string, mode: StudyMode) => void;
   isLoading: boolean;
+  apiKey: string;
+  setApiKey: (key: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading, apiKey, setApiKey }) => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [selectedMode, setSelectedMode] = useState<StudyMode | null>(null);
-  const [apiKey, setApiKey] = useState<string>('');
   const [showApiSaveConfirm, setShowApiSaveConfirm] = useState(false);
-
-  useEffect(() => {
-    const savedApiKey = localStorage.getItem('gemini_api_key');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-    }
-  }, []);
 
   const handleSaveApiKey = () => {
     if (!apiKey) return;
@@ -30,7 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading }) => {
 
   const handleGenerateClick = () => {
     if (selectedTopic && selectedMode && apiKey) {
-      onGenerate(selectedTopic, selectedMode, apiKey);
+      onGenerate(selectedTopic, selectedMode);
     }
   };
 

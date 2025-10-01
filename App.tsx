@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar.tsx';
 import { ContentDisplay } from './components/ContentDisplay.tsx';
 import { generateContent } from './services/geminiService.ts';
@@ -11,8 +11,16 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'welcome' | 'content'>('welcome');
+  const [apiKey, setApiKey] = useState<string>('');
 
-  const handleGenerate = useCallback(async (selectedTopic: string, selectedMode: StudyMode, apiKey: string) => {
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('gemini_api_key');
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+    }
+  }, []);
+
+  const handleGenerate = useCallback(async (selectedTopic: string, selectedMode: StudyMode) => {
     if (!apiKey) {
       setCurrentView('content');
       setError("Please enter and save your Gemini API Key in the sidebar.");
@@ -47,11 +55,16 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [apiKey]);
 
   return (
     <div className="flex h-screen bg-slate-100 font-sans">
-      <Sidebar onGenerate={handleGenerate} isLoading={isLoading} />
+      <Sidebar 
+        onGenerate={handleGenerate} 
+        isLoading={isLoading}
+        apiKey={apiKey}
+        setApiKey={setApiKey}
+      />
       <main className="flex-1 p-6 md:p-10 overflow-y-auto">
         <ContentDisplay
           view={currentView}
