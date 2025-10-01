@@ -1,20 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PATHOLOGY_TOPICS } from '../constants.ts';
 import { StudyMode } from '../types.ts';
 import { BookOpenIcon, SparklesIcon, QuestionMarkIcon } from './icons/index.tsx';
 
 interface SidebarProps {
-  onGenerate: (topic: string, mode: StudyMode) => void;
+  onGenerate: (topic: string, mode: StudyMode, apiKey: string) => void;
   isLoading: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading }) => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [selectedMode, setSelectedMode] = useState<StudyMode | null>(null);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [showApiSaveConfirm, setShowApiSaveConfirm] = useState(false);
+
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('gemini_api_key');
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+    }
+  }, []);
+
+  const handleSaveApiKey = () => {
+    if (!apiKey) return;
+    localStorage.setItem('gemini_api_key', apiKey);
+    setShowApiSaveConfirm(true);
+    setTimeout(() => setShowApiSaveConfirm(false), 2500);
+  };
 
   const handleGenerateClick = () => {
-    if (selectedTopic && selectedMode) {
-      onGenerate(selectedTopic, selectedMode);
+    if (selectedTopic && selectedMode && apiKey) {
+      onGenerate(selectedTopic, selectedMode, apiKey);
     }
   };
 
@@ -68,11 +84,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading }) => {
             />
           </div>
         </section>
+        
+        <section className="mb-6">
+            <label htmlFor="api-key-input" className="block text-sm font-bold text-slate-700 mb-2">3. Your Gemini API Key</label>
+            <div className="flex items-center space-x-2">
+                <input
+                    id="api-key-input"
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Enter your API Key"
+                    className="flex-grow p-3 bg-slate-100 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    disabled={isLoading}
+                />
+                <button 
+                    onClick={handleSaveApiKey}
+                    disabled={!apiKey || isLoading}
+                    className="bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-lg hover:bg-slate-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Save API Key"
+                >
+                    Save
+                </button>
+            </div>
+             {showApiSaveConfirm && (
+                <p className="text-sm text-green-600 mt-2 fade-in">✓ API Key saved successfully!</p>
+            )}
+            {!apiKey && (
+                 <p className="text-xs text-slate-500 mt-2">Your key is stored only in your browser's local storage.</p>
+            )}
+        </section>
       </div>
 
       <button
         onClick={handleGenerateClick}
-        disabled={!selectedTopic || !selectedMode || isLoading}
+        disabled={!selectedTopic || !selectedMode || isLoading || !apiKey}
         className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 transition-transform transform active:scale-95 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
       >
         {isLoading ? (
