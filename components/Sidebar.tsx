@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PATHOLOGY_TOPICS } from '../constants.ts';
 import { StudyMode } from '../types.ts';
 import { BookOpenIcon, SparklesIcon, QuestionMarkIcon } from './icons/index.tsx';
@@ -13,6 +12,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading }) => {
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [selectedMode, setSelectedMode] = useState<StudyMode | null>(null);
   const [apiKey, setApiKey] = useState<string>('');
+  const [isKeySaved, setIsKeySaved] = useState(false);
+
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('gemini-api-key');
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+    }
+  }, []);
+
+  const handleSaveKey = () => {
+    if (!apiKey) return;
+    localStorage.setItem('gemini-api-key', apiKey);
+    setIsKeySaved(true);
+    setTimeout(() => {
+      setIsKeySaved(false);
+    }, 3000);
+  };
 
   const handleGenerateClick = () => {
     if (selectedTopic && selectedMode && apiKey) {
@@ -29,16 +45,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ onGenerate, isLoading }) => {
       
       <div className="flex-grow">
         <section className="mb-6">
-          <label htmlFor="api-key-input" className="block text-sm font-bold text-slate-700 mb-2">Enter your Gemini API Key</label>
-          <input
-            id="api-key-input"
-            type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="Your API key"
-            className="w-full p-3 bg-slate-100 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-            disabled={isLoading}
-          />
+          <label htmlFor="api-key-input" className="block text-sm font-bold text-slate-700 mb-2">Your Gemini API Key</label>
+           <div className="flex items-center space-x-2">
+            <input
+              id="api-key-input"
+              type="password"
+              value={apiKey}
+              onChange={(e) => {
+                setApiKey(e.target.value);
+                if (isKeySaved) setIsKeySaved(false);
+              }}
+              placeholder="Enter your API key"
+              className="flex-grow p-3 bg-slate-100 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+              disabled={isLoading}
+            />
+            <button
+              onClick={handleSaveKey}
+              disabled={!apiKey || isLoading}
+              className="px-4 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              aria-label="Save API Key"
+            >
+              Save
+            </button>
+          </div>
+          {isKeySaved && (
+            <p className="text-green-600 text-sm mt-2 animate-fade-in" role="status">
+              ✓ API Key saved to your browser.
+            </p>
+          )}
         </section>
 
         <section className="mb-6">
