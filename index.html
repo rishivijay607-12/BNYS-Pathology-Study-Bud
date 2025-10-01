@@ -26,9 +26,17 @@
   }
 }
 </script>
+<!-- 1. Add Babel for in-browser JSX/TSX transpilation -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- 2. Polyfill 'process' to prevent runtime errors in the browser -->
+<script>
+  // This prevents the app from crashing when it tries to access process.env.API_KEY
+  var process = { env: {} };
+</script>
 </head>
   <body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <!-- 3. Update script type to 'text/babel' to be processed by Babel -->
+    <script type="text/babel" data-type="module" src="index.tsx"></script>
   </body>
 </html>
