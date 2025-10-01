@@ -1,32 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { StudyMode, Flashcard, QuizQuestion } from '../types';
 
-// Lazily initialize ai so the app doesn't crash on load if API key is missing.
-let ai: GoogleGenAI | null = null;
-
-function getAiClient(): GoogleGenAI {
-  if (ai) {
-    return ai;
-  }
-  
-  const apiKey = process.env.API_KEY;
-
-  if (!apiKey) {
-    // This error will be caught by the UI and displayed to the user.
-    throw new Error("API_KEY is not configured. Please set it up in your deployment environment.");
-  }
-  
-  ai = new GoogleGenAI({ apiKey });
-  return ai;
-}
-
 const BNYS_CONTEXT_PROMPT = "You are an expert in pathology, creating study materials for a student of Bachelor of Naturopathy and Yogic Sciences (BNYS). The explanations should be clear, concise, and relevant to a holistic and natural medicine perspective where appropriate, while still being medically accurate. ";
 
-async function generateStudyGuide(topic: string): Promise<string> {
-  const client = getAiClient();
+async function generateStudyGuide(topic: string, apiKey: string): Promise<string> {
+  if (!apiKey) {
+    throw new Error("API Key is missing.");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+  
   const prompt = `${BNYS_CONTEXT_PROMPT} Generate a detailed study guide on the topic: "${topic}". Structure the guide with clear headings (using **Heading** format), bullet points (using * Point format), and key takeaways. Focus on etiology, pathogenesis, morphological features, and clinical significance.`;
   
-  const response = await client.models.generateContent({
+  const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
     contents: prompt,
   });
@@ -34,11 +19,15 @@ async function generateStudyGuide(topic: string): Promise<string> {
   return response.text;
 }
 
-async function generateFlashcards(topic: string): Promise<Flashcard[]> {
-  const client = getAiClient();
+async function generateFlashcards(topic: string, apiKey: string): Promise<Flashcard[]> {
+  if (!apiKey) {
+    throw new Error("API Key is missing.");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+
   const prompt = `${BNYS_CONTEXT_PROMPT} Generate 10-15 key flashcards for the pathology topic: "${topic}". For each flashcard, provide a key term and its concise definition.`;
 
-  const response = await client.models.generateContent({
+  const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: prompt,
     config: {
@@ -72,11 +61,15 @@ async function generateFlashcards(topic: string): Promise<Flashcard[]> {
   }
 }
 
-async function generateQuiz(topic: string): Promise<QuizQuestion[]> {
-  const client = getAiClient();
+async function generateQuiz(topic: string, apiKey: string): Promise<QuizQuestion[]> {
+  if (!apiKey) {
+    throw new Error("API Key is missing.");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+
   const prompt = `${BNYS_CONTEXT_PROMPT} Create a multiple-choice quiz with 5-7 questions on the pathology topic: "${topic}". Each question should have four options, one correct answer, and a brief explanation for the correct answer.`;
 
-  const response = await client.models.generateContent({
+  const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: prompt,
     config: {
@@ -119,14 +112,14 @@ async function generateQuiz(topic: string): Promise<QuizQuestion[]> {
   }
 }
 
-export async function generateContent(topic: string, mode: StudyMode): Promise<string | Flashcard[] | QuizQuestion[]> {
+export async function generateContent(topic: string, mode: StudyMode, apiKey: string): Promise<string | Flashcard[] | QuizQuestion[]> {
   switch (mode) {
     case StudyMode.Guide:
-      return generateStudyGuide(topic);
+      return generateStudyGuide(topic, apiKey);
     case StudyMode.Flashcards:
-      return generateFlashcards(topic);
+      return generateFlashcards(topic, apiKey);
     case StudyMode.Quiz:
-      return generateQuiz(topic);
+      return generateQuiz(topic, apiKey);
     default:
       throw new Error("Invalid study mode selected.");
   }

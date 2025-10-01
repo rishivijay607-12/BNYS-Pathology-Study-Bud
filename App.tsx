@@ -12,10 +12,14 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'welcome' | 'content'>('welcome');
 
-  const handleGenerate = useCallback(async (selectedTopic: string, selectedMode: StudyMode) => {
+  const handleGenerate = useCallback(async (selectedTopic: string, selectedMode: StudyMode, apiKey: string) => {
     if (!selectedTopic || !selectedMode) {
       setError("Please select a topic and a study mode.");
       return;
+    }
+    if (!apiKey) {
+        setError("Please enter your Gemini API Key.");
+        return;
     }
     
     setIsLoading(true);
@@ -26,7 +30,7 @@ const App: React.FC = () => {
     setStudyMode(selectedMode);
 
     try {
-      const result = await generateContent(selectedTopic, selectedMode);
+      const result = await generateContent(selectedTopic, selectedMode, apiKey);
       setContent(result);
     } catch (e) {
       console.error(e);
