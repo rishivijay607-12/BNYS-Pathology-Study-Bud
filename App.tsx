@@ -1,8 +1,9 @@
+
 import React, { useState, useCallback } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { ContentDisplay } from './components/ContentDisplay';
-import { generateContent } from './services/geminiService';
-import { StudyMode, Flashcard, QuizQuestion } from './types';
+import { Sidebar } from './components/Sidebar.tsx';
+import { ContentDisplay } from './components/ContentDisplay.tsx';
+import { generateContent } from './services/geminiService.ts';
+import { StudyMode, Flashcard, QuizQuestion } from './types.ts';
 
 const App: React.FC = () => {
   const [studyMode, setStudyMode] = useState<StudyMode | null>(null);

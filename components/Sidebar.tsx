@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
-import { PATHOLOGY_TOPICS } from '../constants';
-import { StudyMode } from '../types';
-import { BookOpenIcon, SparklesIcon, QuestionMarkIcon } from './icons';
+import { PATHOLOGY_TOPICS } from '../constants.ts';
+import { StudyMode } from '../types.ts';
+import { BookOpenIcon, SparklesIcon, QuestionMarkIcon } from './icons/index.tsx';
 
 interface SidebarProps {
   onGenerate: (topic: string, mode: StudyMode, apiKey: string) => void;

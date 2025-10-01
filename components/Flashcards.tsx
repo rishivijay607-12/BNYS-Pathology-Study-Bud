@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Flashcard } from '../types';
+import { Flashcard } from '../types.ts';
 
 interface FlashcardsProps {
   cards: Flashcard[];

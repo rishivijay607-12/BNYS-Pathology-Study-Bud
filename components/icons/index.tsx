@@ -1,4 +1,4 @@
 
-export * from './BookOpenIcon';
-export * from './SparklesIcon';
-export * from './QuestionMarkIcon';
+export * from './BookOpenIcon.tsx';
+export * from './SparklesIcon.tsx';
+export * from './QuestionMarkIcon.tsx';

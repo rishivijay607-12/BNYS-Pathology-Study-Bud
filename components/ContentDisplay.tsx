@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { StudyMode, Flashcard, QuizQuestion } from '../types';
-import { LoadingSpinner } from './LoadingSpinner';
-import { StudyGuide } from './StudyGuide';
-import { Flashcards } from './Flashcards';
-import { Quiz } from './Quiz';
+import { StudyMode, Flashcard, QuizQuestion } from '../types.ts';
+import { LoadingSpinner } from './LoadingSpinner.tsx';
+import { StudyGuide } from './StudyGuide.tsx';
+import { Flashcards } from './Flashcards.tsx';
+import { Quiz } from './Quiz.tsx';
 
 interface ContentDisplayProps {
   view: 'welcome' | 'content';

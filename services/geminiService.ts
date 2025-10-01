@@ -1,5 +1,6 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
-import { StudyMode, Flashcard, QuizQuestion } from '../types';
+import { StudyMode, Flashcard, QuizQuestion } from '../types.ts';
 
 const BNYS_CONTEXT_PROMPT = "You are an expert in pathology, creating study materials for a student of Bachelor of Naturopathy and Yogic Sciences (BNYS). The explanations should be clear, concise, and relevant to a holistic and natural medicine perspective where appropriate, while still being medically accurate. ";
 
