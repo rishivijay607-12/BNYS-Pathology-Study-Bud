@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar.tsx';
 import { ContentDisplay } from './components/ContentDisplay.tsx';
@@ -13,14 +12,10 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'welcome' | 'content'>('welcome');
 
-  const handleGenerate = useCallback(async (selectedTopic: string, selectedMode: StudyMode, apiKey: string) => {
+  const handleGenerate = useCallback(async (selectedTopic: string, selectedMode: StudyMode) => {
     if (!selectedTopic || !selectedMode) {
       setError("Please select a topic and a study mode.");
       return;
-    }
-    if (!apiKey) {
-        setError("Please enter your Gemini API Key.");
-        return;
     }
     
     setIsLoading(true);
@@ -31,7 +26,7 @@ const App: React.FC = () => {
     setStudyMode(selectedMode);
 
     try {
-      const result = await generateContent(selectedTopic, selectedMode, apiKey);
+      const result = await generateContent(selectedTopic, selectedMode);
       setContent(result);
     } catch (e) {
       console.error(e);
