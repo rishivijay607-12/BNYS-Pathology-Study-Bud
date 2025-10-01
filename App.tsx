@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ContentDisplay } from './components/ContentDisplay';
@@ -31,7 +30,11 @@ const App: React.FC = () => {
       setContent(result);
     } catch (e) {
       console.error(e);
-      setError("Sorry, something went wrong while generating the content. Please try again.");
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("An unknown error occurred while generating content. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
