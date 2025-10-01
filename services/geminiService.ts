@@ -1,10 +1,13 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { StudyMode, Flashcard, QuizQuestion } from '../types.ts';
 
+// IMPORTANT: Replace "YOUR_API_KEY_HERE" with your actual Gemini API Key
+const API_KEY = "YOUR_API_KEY_HERE";
+
 const BNYS_CONTEXT_PROMPT = "You are an expert in pathology, creating study materials for a student of Bachelor of Naturopathy and Yogic Sciences (BNYS). The explanations should be clear, concise, and relevant to a holistic and natural medicine perspective where appropriate, while still being medically accurate. ";
 
-async function generateStudyGuide(apiKey: string, topic: string): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey });
+async function generateStudyGuide(topic: string): Promise<string> {
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
   const prompt = `${BNYS_CONTEXT_PROMPT} Generate a detailed study guide on the topic: "${topic}". Structure the guide with clear headings (using **Heading** format), bullet points (using * Point format), and key takeaways. Focus on etiology, pathogenesis, morphological features, and clinical significance.`;
   
   const response = await ai.models.generateContent({
@@ -15,8 +18,8 @@ async function generateStudyGuide(apiKey: string, topic: string): Promise<string
   return response.text;
 }
 
-async function generateFlashcards(apiKey: string, topic: string): Promise<Flashcard[]> {
-  const ai = new GoogleGenAI({ apiKey });
+async function generateFlashcards(topic: string): Promise<Flashcard[]> {
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
   const prompt = `${BNYS_CONTEXT_PROMPT} Generate 10-15 key flashcards for the pathology topic: "${topic}". For each flashcard, provide a key term and its concise definition.`;
 
   const response = await ai.models.generateContent({
@@ -53,8 +56,8 @@ async function generateFlashcards(apiKey: string, topic: string): Promise<Flashc
   }
 }
 
-async function generateQuiz(apiKey: string, topic: string): Promise<QuizQuestion[]> {
-  const ai = new GoogleGenAI({ apiKey });
+async function generateQuiz(topic: string): Promise<QuizQuestion[]> {
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
   const prompt = `${BNYS_CONTEXT_PROMPT} Create a multiple-choice quiz with 5-7 questions on the pathology topic: "${topic}". Each question should have four options, one correct answer, and a brief explanation for the correct answer.`;
 
   const response = await ai.models.generateContent({
@@ -100,14 +103,18 @@ async function generateQuiz(apiKey: string, topic: string): Promise<QuizQuestion
   }
 }
 
-export async function generateContent(apiKey: string, topic: string, mode: StudyMode): Promise<string | Flashcard[] | QuizQuestion[]> {
+export async function generateContent(topic: string, mode: StudyMode): Promise<string | Flashcard[] | QuizQuestion[]> {
+  if (API_KEY === "YOUR_API_KEY_HERE") {
+    throw new Error("Please replace 'YOUR_API_KEY_HERE' with your actual Gemini API key in services/geminiService.ts");
+  }
+
   switch (mode) {
     case StudyMode.Guide:
-      return generateStudyGuide(apiKey, topic);
+      return generateStudyGuide(topic);
     case StudyMode.Flashcards:
-      return generateFlashcards(apiKey, topic);
+      return generateFlashcards(topic);
     case StudyMode.Quiz:
-      return generateQuiz(apiKey, topic);
+      return generateQuiz(topic);
     default:
       throw new Error("Invalid study mode selected.");
   }
